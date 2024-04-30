@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesquisa CEP</title>
+    <link rel="stylesheet" href="styles/index.css">
+
+</head>
+<body>
+    <form id="formulario" onsubmit="event.preventDefault(); enviaFormulario();">
+        <h1 id="titulo">Pesquisa CEP</h1>
+        <div id="pesquisaCep">
+            <input type="text" name="pesquisa" id="cep" placeholder="Digite um CEP...">
+            <button id="botao">
+                <img src="images/search.svg" alt="Ícone de pesquisa">
+            </button>
+        </div>
+    </form>
+
+    <div id="resultados">
+    </div>
+    <footer>
+        <img src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/icons/lightbulb-fill.svg" alt="ícone de lâmpada para mudar o tema da página" id="tema">
+    </footer>
+    <script>
+        let CEP = document.getElementById("cep");
+        let BOTAO = document.getElementById("botao");
+        let RESULTADOS = document.querySelector("#resultados");
+
+        async function enviaFormulario(){
+
+            let validaCEP = CEP.value;
+
+            //Validar se o CEP está vazio ou se é menor que 8
+            if(validaCEP === "" || validaCEP.length < 8)
+            {
+                alert("Por favor digite um CEP válido com 8 dígitos");
+                return;
+            };
+        
+            const urlApi = await fetch(`https://viacep.com.br/ws/${CEP.value}/json/`);
+            const respostaJSON = await urlApi.json();
+
+            if(respostaJSON.erro)
+            {
+                alert("CEP não encontrado.");
+            };
+            RESULTADOS.innerHTML = '';
+
+            RESULTADOS.innerHTML +=`
+            <div id="card">
+                <p>
+                    <span class="informacoes">Cidade/Estado: 
+                    </span>
+                    <span class="respostaApi">${respostaJSON.localidade}-${respostaJSON.uf}
+                    </span>
+                </p>
+                <p>
+                    <span class="informacoes">Rua: 
+                    </span>
+                    <span class="respostaApi">${respostaJSON.logradouro}
+                    </span>
+                </p>
+                <p>
+                    <span class="informacoes">Bairro: 
+                    </span>
+                    <span class="respostaApi">${respostaJSON.bairro}
+                    </span>
+                </p>
+            </div>
+            `;
+            atualizarEstiloRespostaApi();
+        }     
+    </script>
+    <script src="scripts/mudaTema.js" defer></script>
+    
+</body>
+</html>
